@@ -17,6 +17,8 @@ from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
+from prometheus_flask_exporter import PrometheusMetrics
+
 
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = 'secret'
@@ -25,6 +27,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'static/files'
 Session(app)
 socketio = SocketIO(app, manage_session=False)
+metrics = PrometheusMetrics(app)
+
 
 DB_USER = 'jl6017'
 DB_PASS = 'jl6017'
@@ -130,6 +134,9 @@ def teardown_request(exception):
 def start():
     return render_template('login.html')
 
+@app.route('/metrics')
+def metrics():
+    return metrics
 
 @app.route('/login.html')
 def index():
@@ -587,7 +594,6 @@ def namechange():
 
         return redirect(url_for('backtohome', message="Name change successful."))
     return render_template('namechange.html')
-
 
 def get_uid():
     return g.conn.execute(f"""
