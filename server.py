@@ -19,7 +19,6 @@ import os
 from wtforms.validators import InputRequired
 from prometheus_flask_exporter import PrometheusMetrics
 
-
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = 'secret'
 app.config['SECRET_KEY'] = 'secret'
@@ -30,6 +29,18 @@ socketio = SocketIO(app, manage_session=False)
 metrics = PrometheusMetrics(app)
 
 
+from elasticapm.contrib.flask import ElasticAPM
+app.config['ELASTIC_APM'] = {
+  'SERVICE_NAME': 'my-service-name',
+
+  'SECRET_TOKEN': 'CkHTLWPKy4vjyIpxTS',
+
+  'SERVER_URL': 'https://e51e63cbb3884b439fcae8c29055c509.apm.us-east4.gcp.elastic-cloud.com:443',
+
+  'ENVIRONMENT': 'my-environment',
+}
+
+apm = ElasticAPM(app)
 DB_USER = 'jl6017'
 DB_PASS = 'jl6017'
 DB_SERVER = 'w4111.cisxo09blonu.us-east-1.rds.amazonaws.com'
